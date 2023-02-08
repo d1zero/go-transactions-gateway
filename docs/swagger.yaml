@@ -1,0 +1,46 @@
+basePath: /api
+definitions:
+  dto.GetTransactionsRequest:
+    properties:
+      userID:
+        type: integer
+    required:
+    - userID
+    type: object
+host: 127.0.0.1:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a transaction gateway server
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Transaction Gateway API
+  version: "1.0"
+paths:
+  /transaction:
+    post:
+      consumes:
+      - application/json
+      description: Get transactions list
+      parameters:
+      - description: User ID
+        in: body
+        name: userID
+        required: true
+        schema:
+          $ref: '#/definitions/dto.GetTransactionsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: GetTransactions
+      tags:
+      - transactions
+swagger: "2.0"
