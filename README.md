@@ -1,3 +1,5 @@
+[![CI](https://github.com/tj-actions/coverage-badge-go/workflows/CI/badge.svg)](https://github.com/d1zero/go-transactions-gateway/actions?query=workflow%3ACI)
+
 # Transactions gateway
 
 To run app:
