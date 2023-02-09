@@ -2,13 +2,15 @@ package config
 
 import (
 	"github.com/spf13/viper"
+	"go-transactions-gateway/pkg/postgres"
 	"log"
 )
 
 type (
 	Config struct {
-		Logger Logger `mapstructure:"logger" validate:"required"`
-		Server Server `mapstructure:"server" validate:"required"`
+		Logger   Logger          `mapstructure:"logger" validate:"required"`
+		Server   Server          `mapstructure:"server" validate:"required"`
+		Postgres postgres.Config `mapstructure:"postgres" validate:"required"`
 	}
 
 	Logger struct {

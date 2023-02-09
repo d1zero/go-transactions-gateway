@@ -28,12 +28,20 @@ func (c *TransactionController) GetTransactions() fiber.Handler {
 		if err := c.val.ValidateRequestBody(ctx, &p); err != nil {
 			return ctx.SendStatus(fiber.StatusBadRequest)
 		}
-		return ctx.SendStatus(fiber.StatusOK)
+
+		result, err := c.transactionService.GetTransactions(ctx.UserContext(), p)
+		if err != nil {
+			return ctx.SendStatus(fiber.StatusInternalServerError)
+		}
+		if len(result) == 0 {
+			return ctx.SendStatus(fiber.StatusNoContent)
+		}
+		return ctx.JSON(result)
 	}
 }
 
 func (c *TransactionController) RegisterTransactionRoutes(group fiber.Router) {
-	group.Post("", c.GetTransactions())
+	group.Get("", c.GetTransactions())
 }
 
 func NewTransactionService(

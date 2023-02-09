@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: "transactions_user"
+      POSTGRES_PASSWORD: "transactions"
+      POSTGRES_DB: "transactions"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    ports:
+      - "5432:5432"
+    volumes:
+      - .:/var/lib/postgresql/data

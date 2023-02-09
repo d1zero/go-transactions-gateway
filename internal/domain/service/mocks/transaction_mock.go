@@ -5,6 +5,8 @@
 package mocks
 
 import (
+	context "context"
+	dto "go-transactions-gateway/internal/domain/dto"
 	entity "go-transactions-gateway/internal/domain/entity"
 	reflect "reflect"
 
@@ -35,16 +37,16 @@ func (m *MockTransactionService) EXPECT() *MockTransactionServiceMockRecorder {
 }
 
 // GetTransactions mocks base method.
-func (m *MockTransactionService) GetTransactions(arg0 int) ([]entity.Transaction, error) {
+func (m *MockTransactionService) GetTransactions(arg0 context.Context, arg1 dto.GetTransactionsRequest) ([]entity.Transaction, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetTransactions", arg0)
+	ret := m.ctrl.Call(m, "GetTransactions", arg0, arg1)
 	ret0, _ := ret[0].([]entity.Transaction)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetTransactions indicates an expected call of GetTransactions.
-func (mr *MockTransactionServiceMockRecorder) GetTransactions(arg0 interface{}) *gomock.Call {
+func (mr *MockTransactionServiceMockRecorder) GetTransactions(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactions", reflect.TypeOf((*MockTransactionService)(nil).GetTransactions), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactions", reflect.TypeOf((*MockTransactionService)(nil).GetTransactions), arg0, arg1)
 }

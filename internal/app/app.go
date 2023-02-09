@@ -10,7 +10,9 @@ import (
 	_ "go-transactions-gateway/docs"
 	"go-transactions-gateway/internal/controller/http"
 	"go-transactions-gateway/internal/domain/service"
+	"go-transactions-gateway/internal/postgres"
 	"go-transactions-gateway/pkg/govalidator"
+	pgpkg "go-transactions-gateway/pkg/postgres"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"log"
@@ -45,7 +47,18 @@ func Run() {
 	atom.SetLevel(zapcore.Level(*cfg.Logger.Level))
 	l.Infof("logger initialized successfully")
 
-	transactionService := service.NewTransactionService()
+	db, err := pgpkg.New(cfg.Postgres)
+	if err != nil {
+		l.Fatalf("database connection error: %s", err.Error())
+	}
+	defer func() {
+		db.Close()
+		l.Infof("database disconnected successfully")
+	}()
+
+	transactionRepository := postgres.NewTransactionRepository(db)
+
+	transactionService := service.NewTransactionService(transactionRepository)
 
 	transactionController := http.NewTransactionService(transactionService, *v)
 

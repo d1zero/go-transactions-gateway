@@ -1,15 +1,19 @@
 package service
 
 import (
+	"context"
 	"go-transactions-gateway/internal/domain"
+	"go-transactions-gateway/internal/domain/dto"
 	"go-transactions-gateway/internal/domain/entity"
+	"go-transactions-gateway/internal/domain/repository"
 )
 
 type Transaction struct {
+	transactionRepo repository.TransactionsRepository
 }
 
-func (s *Transaction) GetTransactions(userID int) ([]entity.Transaction, error) {
-	if userID == 2 {
+func (s *Transaction) GetTransactions(ctx context.Context, p dto.GetTransactionsRequest) ([]entity.Transaction, error) {
+	if p.UserID == 2 {
 		return []entity.Transaction{}, entity.ErrNoUserTransactions
 	}
 	return []entity.Transaction{
@@ -19,6 +23,6 @@ func (s *Transaction) GetTransactions(userID int) ([]entity.Transaction, error) 
 
 var _ domain.TransactionService = &Transaction{}
 
-func NewTransactionService() *Transaction {
-	return &Transaction{}
+func NewTransactionService(transactionRepo repository.TransactionsRepository) *Transaction {
+	return &Transaction{transactionRepo}
 }

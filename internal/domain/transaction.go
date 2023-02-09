@@ -1,7 +1,11 @@
 package domain
 
-import "go-transactions-gateway/internal/domain/entity"
+import (
+	"context"
+	"go-transactions-gateway/internal/domain/dto"
+	"go-transactions-gateway/internal/domain/entity"
+)
 
 type TransactionService interface {
-	GetTransactions(int) ([]entity.Transaction, error)
+	GetTransactions(context.Context, dto.GetTransactionsRequest) ([]entity.Transaction, error)
 }

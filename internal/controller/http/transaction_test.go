@@ -11,6 +11,7 @@ import (
 	"go-transactions-gateway/internal/domain/service/mocks"
 	"go-transactions-gateway/pkg/govalidator"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
@@ -32,6 +33,14 @@ func TestTransactionController_GetTransactions(t *testing.T) {
 			nil,
 		},
 		{
+			"user without transactions data",
+			"/api/transaction",
+			dto.GetTransactionsRequest{UserID: 2},
+			[]entity.Transaction{},
+			204,
+			nil,
+		},
+		{
 			"non valid data",
 			"/api/transaction",
 			dto.GetTransactionsRequest{UserID: 0},
@@ -41,30 +50,34 @@ func TestTransactionController_GetTransactions(t *testing.T) {
 		},
 	}
 
-	v := govalidator.New()
-	app := fiber.New()
-	apiGroup := app.Group("api")
-	transactionGroup := apiGroup.Group("transaction")
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			v := govalidator.New()
+			app := fiber.New()
+			apiGroup := app.Group("api")
+			transactionGroup := apiGroup.Group("transaction")
+
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-
-			transactionService := mocks.NewMockTransactionService(ctrl)
-			transactionController := NewTransactionService(transactionService, *v)
-			transactionService.EXPECT().GetTransactions(tt.data).Return(tt.result, tt.errMsg).MaxTimes(1)
-
-			transactionController.RegisterTransactionRoutes(transactionGroup)
 
 			body, err := json.Marshal(tt.data)
 			if err != nil {
 				t.Fatal("invalid body")
 			}
 
-			req, _ := http.NewRequest(http.MethodPost, tt.route, bytes.NewBuffer(body))
+			req := httptest.NewRequest(http.MethodGet, tt.route, bytes.NewBuffer(body))
 			req.Header.Set("Content-Type", "application/json")
-			resp, _ := app.Test(req, 1)
+
+			transactionService := mocks.NewMockTransactionService(ctrl)
+			transactionController := NewTransactionService(transactionService, *v)
+			transactionService.EXPECT().GetTransactions(req.Context(), tt.data).Return(tt.result, tt.errMsg).MaxTimes(1)
+
+			transactionController.RegisterTransactionRoutes(transactionGroup)
+
+			resp, err := app.Test(req, -1)
+			if err != nil {
+				t.Fatal("unable to make request")
+			}
 			assert.Equal(t, tt.responseCode, resp.StatusCode)
 		})
 	}

@@ -17,3 +17,9 @@ lint:
 
 lint-verbose:
 	golangci-lint run -v
+
+db-up:
+	docker compose up -d
+
+db-down:
+	docker compose down -v --rmi "local"
