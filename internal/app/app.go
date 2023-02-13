@@ -56,10 +56,12 @@ func Run() {
 		l.Infof("database disconnected successfully")
 	}()
 
-	transactionRepository := postgres.NewTransactionRepository(db)
+	pgRegistry := postgres.NewPGRegistry(db)
 
-	transactionService := service.NewTransactionService(transactionRepository)
+	userService := service.NewUserService(pgRegistry)
+	transactionService := service.NewTransactionService(pgRegistry)
 
+	userController := http.NewUserController(userService, *v)
 	transactionController := http.NewTransactionService(transactionService, *v)
 
 	// @title Swagger Transaction Gateway API
@@ -80,13 +82,16 @@ func Run() {
 	app.Use(fiberzap.New(fiberzap.Config{
 		Logger: logger,
 	}))
-	app.Get("/swagger/*", fiberSwagger.WrapHandler)
+	if !(*cfg.Server.IsProduction) {
+		app.Get("/swagger/*", fiberSwagger.WrapHandler)
+	}
 
 	apiGroup := app.Group("api")
-
 	transactionGroup := apiGroup.Group("transaction")
+	userGroup := apiGroup.Group("user")
 
-	transactionController.RegisterTransactionRoutes(transactionGroup)
+	userController.RegisterRoutes(userGroup)
+	transactionController.RegisterRoutes(transactionGroup)
 
 	go func() {
 		l.Infof("starting server on port: %s:%d", cfg.Server.Host, cfg.Server.Port)

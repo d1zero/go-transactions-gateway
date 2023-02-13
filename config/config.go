@@ -18,8 +18,9 @@ type (
 	}
 
 	Server struct {
-		Host string `mapstructure:"host" validate:"required"`
-		Port int    `mapstructure:"port" validate:"required"`
+		Host         string `mapstructure:"host" validate:"required"`
+		Port         int    `mapstructure:"port" validate:"required"`
+		IsProduction *bool  `mapstructure:"is_production" validate:"required"`
 	}
 )
 

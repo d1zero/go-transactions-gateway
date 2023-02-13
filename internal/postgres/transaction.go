@@ -9,7 +9,7 @@ import (
 )
 
 type Transaction struct {
-	db *sqlx.DB
+	q queryRunner
 }
 
 func (r *Transaction) FindByUserID(ctx context.Context,

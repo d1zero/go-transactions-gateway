@@ -40,8 +40,8 @@ func (c *TransactionController) GetTransactions() fiber.Handler {
 	}
 }
 
-func (c *TransactionController) RegisterTransactionRoutes(group fiber.Router) {
-	group.Get("", c.GetTransactions())
+func (c *TransactionController) RegisterRoutes(group fiber.Router) {
+	group.Post("", c.GetTransactions())
 }
 
 func NewTransactionService(

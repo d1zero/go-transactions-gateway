@@ -9,20 +9,15 @@ import (
 )
 
 type Transaction struct {
-	transactionRepo repository.TransactionsRepository
+	repos repository.Registry
 }
 
 func (s *Transaction) GetTransactions(ctx context.Context, p dto.GetTransactionsRequest) ([]entity.Transaction, error) {
-	if p.UserID == 2 {
-		return []entity.Transaction{}, entity.ErrNoUserTransactions
-	}
-	return []entity.Transaction{
-		{ID: 1},
-	}, nil
+	return s.repos.Transaction().FindByUserID(ctx, p)
 }
 
 var _ domain.TransactionService = &Transaction{}
 
-func NewTransactionService(transactionRepo repository.TransactionsRepository) *Transaction {
-	return &Transaction{transactionRepo}
+func NewTransactionService(repos repository.Registry) *Transaction {
+	return &Transaction{repos}
 }

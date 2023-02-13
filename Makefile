@@ -23,3 +23,9 @@ db-up:
 
 db-down:
 	docker compose down -v --rmi "local"
+
+migrateup:
+	migrate -path db/migration -database "postgresql://transactions_user:transactions@localhost:5432/transactions?sslmode=disable" -verbose up
+
+migratedown:
+	migrate -path db/migration -database "postgresql://transactions_user:transactions@localhost:5432/transactions?sslmode=disable" -verbose down
