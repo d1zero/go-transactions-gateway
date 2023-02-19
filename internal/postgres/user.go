@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"github.com/jmoiron/sqlx"
 	"go-transactions-gateway/internal/domain/entity"
 	"go-transactions-gateway/internal/domain/repository"
 )
@@ -34,8 +33,19 @@ func (r *User) CreateBalance(ctx context.Context, p entity.Balance) (result enti
 	return result, err
 }
 
-var _ repository.UserRepository = &User{}
-
-func NewUserRepository(db *sqlx.DB) *User {
-	return &User{db}
+func (r *User) GetUsersBalances(ctx context.Context) (result []entity.UserBalance, err error) {
+	q := `
+		SELECT 
+		    b.id,
+		    u.id AS client_id,
+		    CONCAT(u.first_name, ' ', u.last_name) AS client,
+		    l.base_amount+l.action_amount AS balance 
+		FROM clients.users u
+		INNER JOIN clients.balance b ON b.client_id=u.id
+		INNER JOIN clients.ledger l ON l.account_id=b.id
+	`
+	err = r.q.SelectContext(ctx, &result, q)
+	return result, err
 }
+
+var _ repository.UserRepository = &User{}

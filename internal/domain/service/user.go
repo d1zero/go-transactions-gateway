@@ -13,7 +13,7 @@ type User struct {
 	repos repository.Registry
 }
 
-func (u *User) CreateUser(ctx context.Context, p dto.CreateUser) (user entity.User, err error) {
+func (s *User) CreateUser(ctx context.Context, p dto.CreateUser) (user entity.User, err error) {
 	commissionFix, err := decimal.NewFromString(p.CommissionFix)
 	if err != nil {
 		return entity.User{}, err
@@ -23,8 +23,8 @@ func (u *User) CreateUser(ctx context.Context, p dto.CreateUser) (user entity.Us
 		return entity.User{}, err
 	}
 
-	err = u.repos.WithTx(ctx, func(m repository.EntityManager) (err error) {
-		user, err := m.User().Create(ctx, entity.User{
+	err = s.repos.WithTx(ctx, func(m repository.EntityManager) (err error) {
+		user, err = m.User().Create(ctx, entity.User{
 			FirstName:         p.FirstName,
 			LastName:          p.LastName,
 			CommissionFix:     commissionFix,
@@ -35,9 +35,20 @@ func (u *User) CreateUser(ctx context.Context, p dto.CreateUser) (user entity.Us
 			return err
 		}
 
-		_, err = m.User().CreateBalance(ctx, entity.Balance{
+		activeBalance, err := m.User().CreateBalance(ctx, entity.Balance{
 			ClientID:    user.ID,
 			Description: "active",
+		})
+
+		if err != nil {
+			return err
+		}
+
+		_, err = m.Transaction().CreateLedgerEntry(ctx, entity.Ledger{
+			AccountID:    activeBalance.ID,
+			BaseAmount:   decimal.NewFromInt(0),
+			ActionAmount: decimal.NewFromInt(0),
+			ActionType:   "init",
 		})
 
 		if err != nil {
@@ -61,6 +72,14 @@ func (u *User) CreateUser(ctx context.Context, p dto.CreateUser) (user entity.Us
 	}
 
 	return user, nil
+}
+
+func (s *User) GetUserTransactions(ctx context.Context, p dto.GetUserTransactionsRequest) ([]entity.Transaction, error) {
+	return s.repos.Transaction().FindByUserID(ctx, p.UserID)
+}
+
+func (s *User) GetUsersBalances(ctx context.Context) ([]entity.UserBalance, error) {
+	return s.repos.User().GetUsersBalances(ctx)
 }
 
 var _ domain.UserService = &User{}

@@ -8,4 +8,5 @@ import (
 type UserRepository interface {
 	Create(context.Context, entity.User) (entity.User, error)
 	CreateBalance(context.Context, entity.Balance) (entity.Balance, error)
+	GetUsersBalances(context.Context) (result []entity.UserBalance, err error)
 }

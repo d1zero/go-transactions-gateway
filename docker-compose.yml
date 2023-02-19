@@ -1,6 +1,7 @@
 version: "3.9"
 services:
   postgres:
+    container_name: 'db'
     image: postgres:15
     environment:
       POSTGRES_USER: "transactions_user"
@@ -11,3 +12,10 @@ services:
       - "5432:5432"
     volumes:
       - .:/var/lib/postgresql/data
+
+  nats:
+    container_name: 'nats_server'
+    image: 'nats:latest'
+    ports:
+      - "4222:4222"
+      - "8222:8222"

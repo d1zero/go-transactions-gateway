@@ -7,5 +7,8 @@ import (
 )
 
 type TransactionsRepository interface {
-	FindByUserID(context.Context, dto.GetTransactionsRequest) ([]entity.Transaction, error)
+	FindByUserID(context.Context, int) ([]entity.Transaction, error)
+	Get(context.Context, dto.PaginationRequest) ([]entity.Transaction, error)
+	CountTransactions(context.Context) (int, error)
+	CreateLedgerEntry(context.Context, entity.Ledger) (entity.Ledger, error)
 }

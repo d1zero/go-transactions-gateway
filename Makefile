@@ -18,10 +18,10 @@ lint:
 lint-verbose:
 	golangci-lint run -v
 
-db-up:
+compose:
 	docker compose up -d
 
-db-down:
+compose-down:
 	docker compose down -v --rmi "local"
 
 migrateup:

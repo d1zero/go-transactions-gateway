@@ -24,8 +24,8 @@ type TransactionController struct {
 // @Router       /transaction [post]
 func (c *TransactionController) GetTransactions() fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
-		var p dto.GetTransactionsRequest
-		if err := c.val.ValidateRequestBody(ctx, &p); err != nil {
+		var p dto.PaginationRequest
+		if err := c.val.ValidateQueryParams(ctx, &p); err != nil {
 			return ctx.SendStatus(fiber.StatusBadRequest)
 		}
 
@@ -33,15 +33,15 @@ func (c *TransactionController) GetTransactions() fiber.Handler {
 		if err != nil {
 			return ctx.SendStatus(fiber.StatusInternalServerError)
 		}
-		if len(result) == 0 {
+		if len(result.Data) == 0 {
 			return ctx.SendStatus(fiber.StatusNoContent)
 		}
-		return ctx.JSON(result)
+		return ctx.JSON(NewResponse(result.Data, result.PaginationResponse))
 	}
 }
 
 func (c *TransactionController) RegisterRoutes(group fiber.Router) {
-	group.Post("", c.GetTransactions())
+	group.Get("", c.GetTransactions())
 }
 
 func NewTransactionService(

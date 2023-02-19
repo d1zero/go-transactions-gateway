@@ -2,6 +2,9 @@
 
 # Transactions gateway
 
+Postman docs
+https://documenter.getpostman.com/view/13993162/2s93CHuvKh
+
 To run app:
 ```shell
 make run
